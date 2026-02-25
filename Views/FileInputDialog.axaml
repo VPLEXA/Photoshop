@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="VectorEditor.Views.FileInputDialog"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Width="440" Height="148"
+        Background="White"
+        ShowInTaskbar="False">
+
+    <StackPanel Margin="16" Spacing="10">
+        <TextBlock x:Name="PromptLabel" FontSize="12" Foreground="#333333"/>
+
+        <TextBox x:Name="PathBox" FontSize="12" Height="28"
+                 KeyDown="OnKeyDown"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Content="Отмена" Width="90" Height="28" FontSize="12" Click="OnCancel"/>
+            <Button x:Name="OkButton" Content="OK" Width="90" Height="28" FontSize="12"
+                    Click="OnOk" Background="#0078D4" Foreground="White"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

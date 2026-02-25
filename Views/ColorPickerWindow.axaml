@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="VectorEditor.Views.ColorPickerWindow"
+        Title="Выбор цвета"
+        Width="460" Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="White">
+
+    <StackPanel Margin="20" Spacing="14">
+        <TextBlock Text="Выберите цвет" FontSize="15" FontWeight="SemiBold"/>
+
+        <!-- Color Preview -->
+        <Border x:Name="PreviewBorder" Height="64" CornerRadius="6"
+                BorderBrush="#CCCCCC" BorderThickness="1"/>
+
+        <!-- Sliders -->
+        <StackPanel Spacing="10">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="R:" Width="20" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="#CC3333"/>
+                <Slider x:Name="SliderR" Minimum="0" Maximum="255" Width="310"
+                        ValueChanged="OnSliderChanged"/>
+                <TextBlock x:Name="LabelR" Width="36" VerticalAlignment="Center" FontSize="13" Text="0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="G:" Width="20" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="#339933"/>
+                <Slider x:Name="SliderG" Minimum="0" Maximum="255" Width="310"
+                        ValueChanged="OnSliderChanged"/>
+                <TextBlock x:Name="LabelG" Width="36" VerticalAlignment="Center" FontSize="13" Text="0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="B:" Width="20" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="#3366CC"/>
+                <Slider x:Name="SliderB" Minimum="0" Maximum="255" Width="310"
+                        ValueChanged="OnSliderChanged"/>
+                <TextBlock x:Name="LabelB" Width="36" VerticalAlignment="Center" FontSize="13" Text="0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Preset Colors -->
+        <TextBlock Text="Быстрый выбор:" FontSize="12"/>
+        <WrapPanel>
+            <Border Width="36" Height="36" Background="Black" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="0,0,0"/>
+            <Border Width="36" Height="36" Background="White" Margin="3" Cursor="Hand" BorderBrush="#CCC" BorderThickness="1" PointerPressed="OnPresetClick" Tag="255,255,255"/>
+            <Border Width="36" Height="36" Background="Red" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="255,0,0"/>
+            <Border Width="36" Height="36" Background="Green" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="0,128,0"/>
+            <Border Width="36" Height="36" Background="Blue" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="0,0,255"/>
+            <Border Width="36" Height="36" Background="Yellow" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="255,255,0"/>
+            <Border Width="36" Height="36" Background="Orange" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="255,165,0"/>
+            <Border Width="36" Height="36" Background="Purple" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="128,0,128"/>
+            <Border Width="36" Height="36" Background="Cyan" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="0,255,255"/>
+            <Border Width="36" Height="36" Background="Magenta" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="255,0,255"/>
+            <Border Width="36" Height="36" Background="Gray" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="128,128,128"/>
+            <Border Width="36" Height="36" Background="Silver" Margin="3" Cursor="Hand" PointerPressed="OnPresetClick" Tag="192,192,192"/>
+        </WrapPanel>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,6,0,0">
+            <Button Content="Отмена" Width="100" Height="34" FontSize="13" Click="OnCancel"/>
+            <Button Content="OK" Width="100" Height="34" FontSize="13" Click="OnOk"
+                    Background="#0078D4" Foreground="White"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

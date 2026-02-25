@@ -1,0 +1,198 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:VectorEditor.ViewModels"
+        xmlns:controls="using:VectorEditor.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="VectorEditor.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Vector Editor"
+        Width="1200" Height="750"
+        Background="#F0F0F0">
+
+    <Window.Styles>
+        <Style Selector="Button.tool">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Margin" Value="2,1"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Background" Value="#E8E8E8"/>
+            <Setter Property="BorderBrush" Value="#AAAAAA"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <Style Selector="Button.tool:pointerover">
+            <Setter Property="Background" Value="#D0E8FF"/>
+        </Style>
+        <Style Selector="Button.tool.active">
+            <Setter Property="Background" Value="#B0D4FF"/>
+            <Setter Property="BorderBrush" Value="#0078D4"/>
+        </Style>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+        </Style>
+        <Style Selector="Border.panel-section">
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style Selector="NumericUpDown">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <!-- Menu Bar -->
+        <Menu DockPanel.Dock="Top" Background="White" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Новый" Click="OnNewProject"/>
+                <MenuItem Header="Открыть..." Click="OnOpenProject"/>
+                <Separator/>
+                <MenuItem Header="Сохранить проект..." Click="OnSaveProject"/>
+                <MenuItem Header="Экспорт в SVG..." Click="OnExportSvg"/>
+                <Separator/>
+                <MenuItem Header="Выход" Click="OnExit"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Background="White" BorderBrush="#CCCCCC"
+                BorderThickness="0,0,0,1" Padding="6,4">
+            <StackPanel Orientation="Horizontal" Spacing="2">
+                <Button Classes="tool" Click="OnNewProject" ToolTip.Tip="Новый проект">
+                    <TextBlock Text="Новый" FontSize="10"/>
+                </Button>
+                <Button Classes="tool" Click="OnOpenProject" ToolTip.Tip="Открыть">
+                    <TextBlock Text="Откр." FontSize="10"/>
+                </Button>
+                <Button Classes="tool" Click="OnSaveProject" ToolTip.Tip="Сохранить">
+                    <TextBlock Text="Сохр." FontSize="10"/>
+                </Button>
+                <Separator Width="1" Background="#CCCCCC" Margin="4,0"/>
+                <Button Classes="tool" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}" ToolTip.Tip="Отменить (Ctrl+Z)">
+                    <TextBlock Text="←" FontSize="14"/>
+                </Button>
+                <Button Classes="tool" Command="{Binding RedoCommand}" IsEnabled="{Binding CanRedo}" ToolTip.Tip="Повторить (Ctrl+Y)">
+                    <TextBlock Text="→" FontSize="14"/>
+                </Button>
+                <Separator Width="1" Background="#CCCCCC" Margin="4,0"/>
+                <Button Classes="tool" Command="{Binding ZoomOutCommand}" ToolTip.Tip="Уменьшить">
+                    <TextBlock Text="−" FontSize="16"/>
+                </Button>
+                <TextBlock VerticalAlignment="Center" Margin="4,0"
+                           Text="{Binding ZoomLevel, StringFormat={}{0:P0}}"
+                           FontSize="11" MinWidth="45" TextAlignment="Center"/>
+                <Button Classes="tool" Command="{Binding ZoomInCommand}" ToolTip.Tip="Увеличить">
+                    <TextBlock Text="+" FontSize="16"/>
+                </Button>
+                <Button Classes="tool" Command="{Binding ZoomResetCommand}" ToolTip.Tip="100%">
+                    <TextBlock Text="1:1" FontSize="10"/>
+                </Button>
+                <Separator Width="1" Background="#CCCCCC" Margin="4,0"/>
+                <Button Classes="tool" Command="{Binding DeleteSelectedCommand}" ToolTip.Tip="Удалить (Del)">
+                    <TextBlock Text="✕" FontSize="12"/>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Right Properties Panel -->
+        <Border DockPanel.Dock="Right" Width="200" Background="White"
+                BorderBrush="#CCCCCC" BorderThickness="1,0,0,0">
+            <ScrollViewer>
+                <StackPanel Margin="0,4">
+                    <!-- Tools -->
+                    <Border Classes="panel-section">
+                        <StackPanel>
+                            <TextBlock Text="Инструмент" Classes="label" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <WrapPanel>
+                                <Button Classes="tool" Classes.active="{Binding IsSelectToolActive}" Click="OnToolSelect" Tag="Select" ToolTip.Tip="Выделение">
+                                    <TextBlock Text="▷" FontSize="14"/>
+                                </Button>
+                                <Button Classes="tool" Classes.active="{Binding IsRectangleToolActive}" Click="OnToolSelect" Tag="Rectangle" ToolTip.Tip="Прямоугольник">
+                                    <Border BorderBrush="Black" BorderThickness="1.5" Width="14" Height="12"/>
+                                </Button>
+                                <Button Classes="tool" Classes.active="{Binding IsEllipseToolActive}" Click="OnToolSelect" Tag="Ellipse" ToolTip.Tip="Эллипс">
+                                    <Ellipse Stroke="Black" StrokeThickness="1.5" Width="14" Height="12"/>
+                                </Button>
+                                <Button Classes="tool" Classes.active="{Binding IsLineToolActive}" Click="OnToolSelect" Tag="Line" ToolTip.Tip="Линия">
+                                    <Line StartPoint="0,10" EndPoint="14,0" Stroke="Black" StrokeThickness="1.5"/>
+                                </Button>
+                                <Button Classes="tool" Classes.active="{Binding IsPolygonToolActive}" Click="OnToolSelect" Tag="Polygon" ToolTip.Tip="Многоугольник">
+                                    <TextBlock Text="⬡" FontSize="14"/>
+                                </Button>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Fill Color -->
+                    <Border Classes="panel-section">
+                        <StackPanel>
+                            <TextBlock Text="Заливка" Classes="label" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="Цвет:" Classes="label"/>
+                                <Border Width="24" Height="24" BorderBrush="Black" BorderThickness="1"
+                                        Background="{Binding ActiveFillColor, Converter={StaticResource ColorToBrushConverter}}"
+                                        Cursor="Hand" PointerPressed="OnFillColorClick"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Stroke Color -->
+                    <Border Classes="panel-section">
+                        <StackPanel>
+                            <TextBlock Text="Обводка" Classes="label" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="Цвет:" Classes="label"/>
+                                <Border Width="24" Height="24" BorderBrush="Black" BorderThickness="1"
+                                        Background="{Binding ActiveStrokeColor, Converter={StaticResource ColorToBrushConverter}}"
+                                        Cursor="Hand" PointerPressed="OnStrokeColorClick"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Shape Size -->
+                    <Border Classes="panel-section" IsVisible="{Binding SelectedShape, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <StackPanel>
+                            <TextBlock Text="Размер" Classes="label" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" RowSpacing="4">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="W:" Classes="label"/>
+                                <NumericUpDown Grid.Row="0" Grid.Column="1" Height="24" Minimum="1" FontSize="10"
+                                               Value="{Binding SelectedShape.Width}"
+                                               ValueChanged="OnShapeSizeChanged"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="H:" Classes="label"/>
+                                <NumericUpDown Grid.Row="1" Grid.Column="1" Height="24" Minimum="1" FontSize="10"
+                                               Value="{Binding SelectedShape.Height}"
+                                               ValueChanged="OnShapeSizeChanged"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Canvas Area -->
+        <Border Background="#808080">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Border Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        BoxShadow="4 4 12 0 #40000000">
+                    <controls:DrawingCanvas x:Name="Canvas"
+                                            ViewModel="{Binding}"
+                                            Width="{Binding CanvasWidth}"
+                                            Height="{Binding CanvasHeight}"
+                                            RenderTransformOrigin="0,0">
+                        <controls:DrawingCanvas.RenderTransform>
+                            <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
+                        </controls:DrawingCanvas.RenderTransform>
+                    </controls:DrawingCanvas>
+                </Border>
+            </ScrollViewer>
+        </Border>
+    </DockPanel>
+</Window>
